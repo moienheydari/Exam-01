@@ -8,8 +8,8 @@ def get_tour_visiting_places_by_tour(tour_id):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
-        query = """SELECT tour_id, place_id, order FROM Tour_Visiting_Places 
-                   WHERE tour_id = ? ORDER BY order ASC"""
+        query = """SELECT tour_id, place_id, [order] FROM Tour_Visiting_Places 
+                   WHERE tour_id = ? ORDER BY [order] ASC"""
         cursor.execute(query, (tour_id,))
         
         rows = cursor.fetchall()
@@ -28,7 +28,7 @@ def add_place_to_tour(tour_id, place_id, order):
         conn = sqlite3.connect("database/space_tours.db")
         cursor = conn.cursor()
         
-        query = "INSERT INTO Tour_Visiting_Places (tour_id, place_id, order) VALUES (?, ?, ?)"
+        query = "INSERT INTO Tour_Visiting_Places (tour_id, place_id, [order]) VALUES (?, ?, ?)"
         cursor.execute(query, (tour_id, place_id, order))
         
         conn.commit()

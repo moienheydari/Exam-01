@@ -1,5 +1,12 @@
 import sqlite3
 
+# Language codes:
+# eng = English
+# it = Italian
+# sp = Spanish
+# por = Portuguese
+# ger = German
+
 
 def get_guide_by_id(guide_id):
     """Get a guide by ID"""

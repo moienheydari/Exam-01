@@ -1,5 +1,10 @@
 import sqlite3
 
+# Schedule format: semicolon-separated day-time pairs
+# Days: SAT, SUN, MON, TUE, WED, THU, FRI
+# Time: HH:MM or X (not available)
+# Example: "SAT_10:45;SUN_14:30;MON_X;TUE_16:00;WED_X;THU_11:15;FRI_X"
+
 
 def get_tour_by_id(tour_id):
     """Get a tour by ID"""

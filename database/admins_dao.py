@@ -19,3 +19,23 @@ def get_admin_by_username(username):
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return None
+
+
+def create_admin(username, password):
+    """Create a new admin"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        cursor = conn.cursor()
+        
+        query = "INSERT INTO Admins (username, password) VALUES (?, ?)"
+        cursor.execute(query, (username, password))
+        
+        conn.commit()
+        admin_id = cursor.lastrowid
+        cursor.close()
+        conn.close()
+        
+        return admin_id
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None

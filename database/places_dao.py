@@ -21,6 +21,26 @@ def get_place_by_id(place_id):
         return None
 
 
+def get_place_by_name(name):
+    """Get a place by name"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = "SELECT id, name FROM Places WHERE name = ?"
+        cursor.execute(query, (name,))
+        
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        return row
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None
+
+
 def get_all_places():
     """Get all places"""
     try:
