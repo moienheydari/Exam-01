@@ -1,4 +1,4 @@
-import sqlite3, users_dao
+import sqlite3, database.users_dao as users_dao
 
 
 def get_tutors():

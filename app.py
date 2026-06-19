@@ -1,59 +1,33 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 from flask_login import LoginManager, login_user, logout_user, login_required
-from models import User
+## EDIT
+from database.models import User 
 
-import users_dao, tutors_dao
+## EDIT
+import database.users_dao as users_dao, database.tutors_dao as tutors_dao
 from datetime import date, datetime
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from PIL import Image
 
+## EDIT
 PROFILE_IMG_HEIGHT = 130
 
+
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "Key for the ImparaTo Web Application"
+## EDIT
+app.config["SECRET_KEY"] = "Secret Key for Space Tours"
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-tutors_list = [
-    {
-        "id": 0,
-        "name": "Juan Pablo",
-        "surname": "Sáenz",
-        "presentation": "Hi! I'm Juan!",
-        "subject": "Introduction to Web Applications",
-        "img": "images/juan.jpg",
-        "reviews_number": 3,
-    },
-    {
-        "id": 1,
-        "name": "Luigi",
-        "surname": "De Russis",
-        "presentation": "Hi! I'm Luigi!",
-        "subject": "Introduction to Web Applications",
-        "img": "images/luigi.jpg",
-        "reviews_number": 1,
-    },
-    {
-        "id": 2,
-        "name": "Alberto",
-        "surname": "Monge",
-        "presentation": "Hi! I'm Alberto!",
-        "subject": "Calculus",
-        "img": "images/alberto.jpg",
-        "reviews_number": 4,
-    },
-]
-
 
 @app.route("/")
 def home():
-    popular = [t for t in tutors_list if t["reviews_number"] > 1]
-    are_we_in_home = True
-    return render_template("index.html", ptutors=popular, phome=are_we_in_home)
+## EDIT
+    return render_template("index.html")
 
 
 @app.route("/myhistory")

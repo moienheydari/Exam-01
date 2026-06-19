@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 from flask_login import LoginManager, login_user, logout_user, login_required
-from models import User
+from database.models import User
 
-import users_dao, tutors_dao
+import database.users_dao as users_dao, database.tutors_dao as tutors_dao
 from datetime import date, datetime
 
 from werkzeug.security import generate_password_hash, check_password_hash
