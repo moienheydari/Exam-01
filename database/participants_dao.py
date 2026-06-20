@@ -59,3 +59,23 @@ def create_participant(first_name, last_name, email, password):
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return None
+
+
+def get_all_participants():
+    """Get all participants"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = "SELECT id, first_name, last_name, email FROM Participants"
+        cursor.execute(query)
+        
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return rows
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []

@@ -140,3 +140,24 @@ def delete_reserved_tour(reserved_tour_id):
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return False
+
+
+def get_reserved_tour_by_tour_and_date(tour_id, date_str):
+    """Get a reserved tour for a specific tour and date (unique per tour+date)"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = """SELECT id, tour_id, date, time, actual_part_count, expected_part_count, 
+                   proof_img_address, reported FROM Reserved_Tours WHERE tour_id = ? AND date = ?"""
+        cursor.execute(query, (tour_id, date_str))
+        
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        return row
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None

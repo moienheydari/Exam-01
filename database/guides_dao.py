@@ -66,3 +66,23 @@ def create_guide(first_name, last_name, email, password, languages, profile_img_
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return None
+
+
+def get_all_guides():
+    """Get all guides"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = "SELECT id, first_name, last_name, email, password, languages, profile_img_address FROM Guides"
+        cursor.execute(query)
+        
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return rows
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []

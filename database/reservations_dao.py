@@ -85,3 +85,45 @@ def delete_reservation(reservation_id):
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return False
+
+
+def get_reservation_by_id(reservation_id):
+    """Get a single reservation by ID"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = """SELECT id, participant_id, reserved_tour_id, person_count, addit_person_1, 
+                   addit_person_2, addit_person_3 FROM Reservations WHERE id = ?"""
+        cursor.execute(query, (reservation_id,))
+        
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        return row
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None
+
+
+def get_all_reservations():
+    """Get all reservations (for admin stats)"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = """SELECT id, participant_id, reserved_tour_id, person_count, addit_person_1, 
+                   addit_person_2, addit_person_3 FROM Reservations"""
+        cursor.execute(query)
+        
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return rows
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []
