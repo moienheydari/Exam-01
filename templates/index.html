@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="row align-items-center py-7 mb-5 g-5">
+  <div class="col-lg-7">
+    <div
+      class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill mb-3 fw-semibold">
+      <i class="bi bi-patch-check-fill me-1"></i> No credits required &middot; Curiosity recommended
+    </div>
+    <h1 class="display-4 fw-black mb-3 text-dark text-gradient-gold">
+      Free Guided Tours Across the <br><span class="text-primary fw-black">Outer Wilds</span>
+    </h1>
+    <p class="lead text-body-secondary mb-4">
+      Launch with volunteer guides and explore ancient ruins, shifting planets, ocean storms, quantum trails, and the
+      strangest corners of a tiny solar system.
+    </p>
+    <a href="#tours-anchor" class="btn btn-primary btn-lg px-4 fw-bold shadow-sm">
+      <i class="bi bi-rocket-takeoff-fill me-2"></i>Explore Tours
+    </a>
+  </div>
+  <div class="col-lg-5 col-xl-4 ms-auto">
+    <!-- Side Card -->
+    <div class="card shadow border-0 overflow-hidden">
+      <div class="card-header text-white py-3 px-4 border-0 experience-card-header">
+        <h5 class="mb-0 fw-bold d-flex align-items-center">
+          <i class="bi bi-journal-check text-primary me-2"></i> Our Space Tour Experience
+        </h5>
+      </div>
+      <div class="card-body p-4 bg-silver-color">
+        <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+          <li class="d-flex align-items-center">
+            <span
+              class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 p-2 rounded-circle me-3">
+              <i class="bi bi-geo-alt-fill fs-5"></i>
+            </span>
+            <div class="fw-bold text-dark">21+ destinations</div>
+          </li>
+          <li class="d-flex align-items-center">
+            <span
+              class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 p-2 rounded-circle me-3">
+              <i class="bi bi-calendar-week-fill fs-5"></i>
+            </span>
+            <div class="fw-bold text-dark">12+ weekly Tours</div>
+          </li>
+          <li class="d-flex align-items-center">
+            <span
+              class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 p-2 rounded-circle me-3">
+              <i class="bi bi-shield-shaded fs-5"></i>
+            </span>
+            <div class="fw-bold text-dark">Beginner to extreme</div>
+          </li>
+          <li class="d-flex align-items-center">
+            <span
+              class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 p-2 rounded-circle me-3">
+              <i class="bi bi-hourglass-split fs-5"></i>
+            </span>
+            <div class="fw-bold text-dark">10-minute training sessions</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div id="tours-anchor" class="mb-2 tours-anchor"></div>
+
+<section class="filter-bar card shadow-sm mb-3 bg-silver-color">
+  <div class="card-body py-2 px-3">
+    <div class="d-flex flex-wrap align-items-center gap-4">
+
+      <!-- Week date -->
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-calendar-week text-primary"></i>
+        <label class="form-label mb-0 small fw-semibold text-nowrap">Week:</label>
+        <input type="date" class="form-control form-control-sm date-input" id="filter-week-start"
+          value="{{ selected_date }}" min="{{ today }}" title="Pick any start date – 7 days will be shown">
+      </div>
+
+      <div class="vr d-none d-md-block"></div>
+
+      <!-- Duration -->
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-hourglass text-primary"></i>
+        <label for="filter-duration" class="form-label mb-0 small fw-semibold text-nowrap">
+          Duration: <span id="dur-display" class="text-primary">Any</span>
+        </label>
+        <input type="range" class="form-range filter-range" id="filter-duration" min="0" max="300" step="30" value="0">
+      </div>
+
+      <div class="vr d-none d-md-block"></div>
+
+      <!-- Language dropdown with checkboxes -->
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-translate text-primary"></i>
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="lang-dropdown-btn"
+            data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+            <span id="lang-btn-label">Languages</span>
+          </button>
+          <ul class="dropdown-menu p-2 shadow-sm lang-dropdown-menu" aria-labelledby="lang-dropdown-btn">
+            {% for lang in languages %}
+            <li>
+              <div class="form-check">
+                <input class="form-check-input lang-check" type="checkbox" value="{{ lang | lower }}"
+                  id="langck_{{ lang }}" data-label="{{ lang }}">
+                <label class="form-check-label" for="langck_{{ lang }}">{{ lang }}</label>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="vr d-none d-md-block"></div>
+
+      <!-- Clear button -->
+      <button class="btn btn-sm btn-outline-danger ms-auto" id="clear-filters-btn">
+        <i class="bi bi-x-circle me-1"></i>Clear
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- 7-day calendar grid -->
+<section class="calendar-grid">
+  {% for day in day_order %}
+  {% set day_date = week_dates[day] %}
+  <div class="day-column">
+
+    <!-- Day header -->
+    <div class="text-center fw-bold border-bottom pb-1 mb-2 small">
+      {{ day }}<br>
+      <span class="text-muted fw-normal">{{ day_date.strftime('%b %d') }}</span>
+    </div>
+
+    <!-- Tour cards -->
+    {% if calendar[day] %}
+    {% for item in calendar[day] %}
+    <a href="{{ url_for('tour_detail', tour_id=item.tour.id) }}"
+      class="card mb-2 shadow-sm tour-card text-decoration-none text-dark {{ 'card-reserved' if item.reserved_tour else 'card-available' }}"
+      data-language="{{ item.tour.language | lower }}" data-duration="{{ item.tour.duration }}"
+      title="{{ item.tour.title }}">
+      <div class="card-body p-2">
+
+        <!-- Title — always truncated with tooltip for full name -->
+        <p class="card-title small fw-bold mb-1 text-truncate">
+          {{ item.tour.title }}
+        </p>
+
+        <div class="small text-muted lh-sm">
+          <div><i class="bi bi-clock me-1"></i>{{ item.time }}</div>
+          <div class="text-truncate"><i class="bi bi-translate me-1"></i>{{ item.tour.language }}</div>
+          <div><i class="bi bi-hourglass me-1"></i>{{ item.tour.duration }} min</div>
+        </div>
+
+        <!-- Spots badge -->
+        {% if item.reserved_tour %}
+        <span class="badge bg-purple-color mt-1 w-100 d-block text-center">
+          {{ item.reserved_tour.expected_part_count }}/{{ item.tour.max_part_count }}
+          <i class="bi bi-people-fill ms-1"></i>
+        </span>
+        {% else %}
+        <span class="badge bg-golden-color text-dark mt-1 w-100 d-block text-center">
+          0/{{ item.tour.max_part_count }}
+          <i class="bi bi-people ms-1"></i>
+        </span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+    {% else %}
+    <p class="text-center mt-2 text-white">—</p>
+    {% endif %}
+
+  </div>
+  {% endfor %}
+</section>
+
+{% endblock %}
