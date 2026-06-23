@@ -9,4 +9,4 @@ __pycache__/
 .idea/
 *.swp
 *.swo
-database/space_tours.db
+*.db
