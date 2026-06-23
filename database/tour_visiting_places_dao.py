@@ -39,3 +39,21 @@ def add_place_to_tour(tour_id, place_id, order):
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return False
+
+
+def delete_places_for_tour(tour_id):
+    """Remove all visiting place entries for a given tour"""
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        cursor = conn.cursor()
+
+        query = "DELETE FROM Tour_Visiting_Places WHERE tour_id = ?"
+        cursor.execute(query, (tour_id,))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return False
