@@ -143,7 +143,7 @@
     {% if calendar[day] %}
     {% for item in calendar[day] %}
     <a href="{{ url_for('tour_detail', tour_id=item.tour.id) }}"
-      class="card mb-2 shadow-sm tour-card text-decoration-none text-dark {{ 'card-reserved' if item.reserved_tour else 'card-available' }}"
+      class="card mb-2 shadow-sm tour-card text-decoration-none text-dark bg-silver-color {{ 'card-reserved' if item.reserved_tour else 'card-available' }}"
       data-language="{{ item.tour.language | lower }}" data-duration="{{ item.tour.duration }}"
       title="{{ item.tour.title }}">
       <div class="card-body p-2">
