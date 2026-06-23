@@ -142,7 +142,7 @@
     <!-- Tour cards -->
     {% if calendar[day] %}
     {% for item in calendar[day] %}
-    <a href="{{ url_for('tour_detail', tour_id=item.tour.id) }}"
+    <a href="{{ url_for('tour_detail', tour_id=item.tour.id, selected_date=day_date.isoformat(), selected_time=item.time) }}"
       class="card mb-2 shadow-sm tour-card text-decoration-none text-dark bg-silver-color {{ 'card-reserved' if item.reserved_tour else 'card-available' }}"
       data-language="{{ item.tour.language | lower }}" data-duration="{{ item.tour.duration }}"
       title="{{ item.tour.title }}">
