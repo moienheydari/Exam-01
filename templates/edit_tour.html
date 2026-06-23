@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Tour{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+
+    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-goback mb-3">
+      <i class="bi bi-arrow-left me-1"></i>Back to profile
+    </a>
+
+    <h2 class="mb-1"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Tour</h2>
+    <p class="text-muted">{{ tour.title }}</p>
+
+    {% if has_reservations %}
+    <div class="alert alert-warning">
+      <i class="bi bi-lock-fill me-1"></i>
+      <strong>Some fields are locked</strong> because this tour already has reservations.
+      You can still update the title, description, and photos.
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm">
+      <div class="card-body bg-silver-color">
+        <form action="{{ url_for('edit_tour', tour_id=tour.id) }}" method="post" enctype="multipart/form-data"
+          novalidate>
+
+          <!-- Always editable -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Tour Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ tour.title }}" maxlength="100"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4"
+              required>{{ tour.description }}</textarea>
+          </div>
+
+          <!-- Essential fields (locked if has_reservations) -->
+          <fieldset {% if has_reservations %}disabled{% endif %}>
+            <legend class="fs-6 fw-semibold border-bottom pb-1 mb-3">
+              <i class="bi bi-exclamation-circle me-1 text-warning"></i>
+              Essential Fields {% if has_reservations %}<span class="text-danger">(locked)</span>{% endif %}
+            </legend>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label for="duration" class="form-label">Duration (minutes)</label>
+                <input type="number" class="form-control" id="duration" name="duration" value="{{ tour.duration }}"
+                  min="30" max="600" required>
+              </div>
+              <div class="col-md-4">
+                <label for="max_part_count" class="form-label">Max Participants</label>
+                <input type="number" class="form-control" id="max_part_count" name="max_part_count"
+                  value="{{ tour.max_part_count }}" min="3" max="50" required>
+              </div>
+              <div class="col-md-4">
+                <label for="language" class="form-label">Language</label>
+                <select class="form-select" id="language" name="language">
+                  {% for lang in guide_languages %}
+                  <option value="{{ lang }}" {{ 'selected' if tour.language==lang else '' }}>{{ lang }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Meeting point -->
+            <div class="mb-3">
+              <label for="meetpoint_place_id" class="form-label">Meeting Point</label>
+              <select class="form-select mb-2" id="meetpoint_place_id" name="meetpoint_place_id">
+                <option value="">-- Select existing place --</option>
+                {% for place in places %}
+                <option value="{{ place.id }}" {{ 'selected' if place.id==tour.meetpoint_place_id else '' }}>
+                  {{ place.name }}
+                </option>
+                {% endfor %}
+              </select>
+              <input type="text" class="form-control" name="new_meetpoint"
+                placeholder="Or type a new meeting point name">
+            </div>
+
+            <!-- Schedule -->
+            <div class="mb-3">
+              <label class="form-label">Weekly Schedule</label>
+              {% for day in day_order %}
+              <div class="d-flex align-items-center mb-2">
+                <div class="form-check me-3 day-check-col">
+                  <input class="form-check-input day-check" type="checkbox" name="schedule_days" value="{{ day }}"
+                    id="day_{{ day }}" data-day="{{ day }}" {{ 'checked' if schedule.get(day) else '' }}>
+                  <label class="form-check-label" for="day_{{ day }}">{{ day }}</label>
+                </div>
+                <input type="time" name="time_{{ day }}" id="time_{{ day }}"
+                  class="form-control time-input {{ 'd-none' if not schedule.get(day) else '' }}"
+                  value="{{ schedule.get(day) or '' }}">
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Tour stops -->
+            <div class="mb-3">
+              <label class="form-label">
+                Tour Stops (Itinerary) <span class="text-danger">*</span>
+                <span class="text-muted small">(at least 4 required)</span>
+              </label>
+              <div id="stops-container">
+                {% set stops_list = current_stops if current_stops is defined else [] %}
+                {% if stops_list and stops_list|length > 0 %}
+                {% for s in stops_list %}
+                <input type="text" name="stops" class="form-control mb-2" value="{{ s }}"
+                  placeholder="Stop {{ loop.index }} – place name" {{ 'required' if loop.index <=4 else '' }}>
+                {% endfor %}
+                {% else %}
+                <input type="text" name="stops" class="form-control mb-2" placeholder="Stop 1 – place name" required>
+                <input type="text" name="stops" class="form-control mb-2" placeholder="Stop 2 – place name" required>
+                <input type="text" name="stops" class="form-control mb-2" placeholder="Stop 3 – place name" required>
+                <input type="text" name="stops" class="form-control mb-2" placeholder="Stop 4 – place name" required>
+                {% endif %}
+              </div>
+              <button type="button" class="btn btn-outline-secondary btn-sm mt-1" id="add-stop">
+                <i class="bi bi-plus me-1"></i>Add another stop
+              </button>
+            </div>
+          </fieldset>
+
+          <!-- Photos (always editable) -->
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-images me-1"></i>Update Photos (leave blank to keep
+              existing)</label>
+            <div class="row g-2">
+              {% for i in range(1, 6) %}
+              {% set photo_attr = 'photo_' ~ i ~ '_address' %}
+              <div class="col-12 col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text">Photo {{ i }}</span>
+                  <input type="file" class="form-control" name="photo_{{ i }}" accept=".jpg,.jpeg,.png">
+                </div>
+                {% if tour[photo_attr] is defined and tour[photo_attr] %}
+                <div class="mt-2">
+                  <img src="{{ url_for('static', filename=tour[photo_attr]) }}" alt="Photo {{ i }} preview"
+                    class="img-thumbnail" style="max-width:150px; max-height:120px;" />
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-lg me-1"></i>Save Changes
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
