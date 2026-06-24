@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+
+<!-- PARTICIPANT PROFILE -->
+{% if current_user.user_type == 'participant' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2><i class="bi bi-person-circle me-2 text-primary"></i>{{ current_user.first_name }} {{ current_user.last_name }}
+    </h2>
+    <p class="text-muted mb-0 text-primary"><i class="bi bi-envelope me-1 text-primary"></i>{{ current_user.email }}</p>
+  </div>
+  <span class="badge bg-primary fs-6">Participant</span>
+</div>
+
+<h4 class="mb-3 fw-bold"><i class="bi bi-calendar-check me-1 text-primary"></i>My Reservations</h4>
+
+{% if reservations %}
+{% for item in reservations|reverse %}
+<div class="card mb-3 shadow-sm border-0">
+  <div class="card-body {{ 'bg-grey-color' if item.is_past else 'bg-silver-color' }}">
+    <div class="row align-items-center ">
+      <div class="col-12 col-md-8">
+        <h5 class="card-title mb-1">
+          {{ item.tour.title }}
+          {% if item.is_past %}
+          <span class="badge bg-purple-color text-white border ms-2 mt-1 fw-normal"
+            style="font-size: 0.8rem;">Past</span>
+          {% endif %}
+        </h5>
+        <p class="mb-1">
+          <i class="bi bi-calendar me-1 text-primary"></i>
+          <strong>{{ item.reserved_tour.date }}</strong> at <strong>{{ item.reserved_tour.time }}</strong>
+        </p>
+        <p class="mb-1">
+          <i class="bi bi-geo-alt me-1 text-success"></i>
+          Meeting point: <strong>{{ item.meetpoint_name }}</strong>
+        </p>
+        <p class="mb-1">
+          <i class="bi bi-people me-1 text-info"></i>
+          Party size: <strong>{{ item.reservation.person_count }}</strong> person(s)
+        </p>
+
+        <!-- Additional people -->
+        {% if item.reservation.addit_person_1 %}
+        <p class="mb-0 small text-muted">
+          Additional:
+          {{ item.reservation.addit_person_1 }}
+          {% if item.reservation.addit_person_2 %}, {{ item.reservation.addit_person_2 }}{% endif %}
+          {% if item.reservation.addit_person_3 %}, {{ item.reservation.addit_person_3 }}{% endif %}
+        </p>
+        {% endif %}
+      </div>
+
+      <!-- Cancel button -->
+      <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+        {% if item.is_past %}
+        <span class="badge bg-secondary">
+          <i class="bi bi-calendar-x me-1"></i>Past Reservation
+        </span>
+        {% elif item.can_cancel %}
+        <form action="{{ url_for('cancel_reservation', reservation_id=item.reservation.id) }}" method="post">
+          <button type="submit" class="btn btn-outline-danger btn-sm"
+            onclick="return confirm('Cancel this reservation?')">
+            <i class="bi bi-x-circle me-1"></i>Cancel
+          </button>
+        </form>
+        {% else %}
+        <span class="badge bg-secondary">
+          <i class="bi bi-lock me-1"></i>Cannot cancel (within 24 h)
+        </span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="alert alert-info">
+  <i class="bi bi-info-circle me-1"></i>
+  You have no reservations yet.
+  <a href="{{ url_for('home') }}#tours-anchor" class="alert-link">Browse tours</a>
+</div>
+{% endif %}
+
+
+<!-- GUIDE PROFILE -->
+{% elif current_user.user_type == 'guide' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex align-items-center gap-3">
+    {% if current_user.profile_img_address %}
+    <img src="{{ url_for('static', filename=current_user.profile_img_address) }}" class="guide-avatar"
+      alt="Profile photo">
+    {% else %}
+    <div class="guide-avatar bg-secondary d-flex align-items-center justify-content-center text-white fs-3">
+      <i class="bi bi-person"></i>
+    </div>
+    {% endif %}
+    <div>
+      <h2 class="mb-0 fw-bold">{{ current_user.first_name }} {{ current_user.last_name }}</h2>
+      <p class="text-muted mb-0 text-primary"><i class="bi bi-envelope me-1 text-primary"></i>{{ current_user.email }}
+      </p>
+      <p class="text-muted mb-0 text-primary">
+        <i class="bi bi-translate me-1 text-primary"></i>
+        {%for lan in languages %}
+        {{lan + ', ' if lan != languages[-1] else lan}}
+        {%endfor%}
+      </p>
+    </div>
+  </div>
+  <div class="d-flex flex-column align-items-end gap-2">
+    <span class="badge bg-success fs-6">Tour Guide</span>
+    <a href="{{ url_for('create_tour') }}" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-circle me-1"></i>Create New Tour
+    </a>
+  </div>
+</div>
+
+<h4 class="mb-3 fw-bold"><i class="bi bi-map me-1 text-primary"></i>My Tours</h4>
+
+{% if tours %}
+{% for tour_item in tours %}
+<div class="card mb-4 shadow-sm bg-silver-color">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 fw-bold">{{ tour_item.title }}</h5>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('edit_tour', tour_id=tour_item.id) }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-pencil me-1"></i>Edit
+      </a>
+      <a href="{{ url_for('tour_detail', tour_id=tour_item.id) }}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-eye me-1"></i>View
+      </a>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="text-muted small mb-2">
+      <i class="bi bi-translate me-1 text-primary"></i>{{ tour_item.language }} &nbsp;|&nbsp;
+      <i class="bi bi-hourglass me-1 text-primary"></i>{{ tour_item.duration }} min &nbsp;|&nbsp;
+      <i class="bi bi-people me-1 text-primary"></i>Max {{ tour_item.max_part_count }}
+      {% if tour_item.has_reservations %}
+      &nbsp;|&nbsp;<span class="badge bg-warning text-dark">Essential fields locked</span>
+      {% endif %}
+    </p>
+
+    {% if tour_item.reserved_tours %}
+    <h6 class="mt-2"><i class="bi bi-calendar2-week me-1 text-primary"></i>Scheduled dates with reservations:</h6>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Expected</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rt in tour_item.reserved_tours %}
+          <tr>
+            <td>{{ rt.date }}</td>
+            <td>{{ rt.time }}</td>
+            <td>{{ rt.expected_part_count }} / {{ tour_item.max_part_count }}</td>
+            <td>
+              {% if rt.is_past %}
+              {% if rt.reported %}
+              <span class="badge bg-success">
+                <i class="bi bi-check-circle me-1"></i>Reported ({{ rt.actual_part_count }} attended + Proof photo)
+              </span>
+              {% elif rt.reportable %}
+              <a href="{{ url_for('report_tour', reserved_tour_id=rt.id) }}" class="btn btn-sm btn-report">
+                <i class="bi bi-clipboard-check me-1"></i>Report
+              </a>
+              {% endif %}
+              {% else %}
+              <span class="badge bg-info text-dark">
+                <i class="bi bi-clock me-1"></i>Upcoming
+              </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted small fst-italic mb-0">No reservations for this tour yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="alert alert-info">
+  <i class="bi bi-info-circle me-1"></i>
+  You haven't created any tours yet.
+  <a href="{{ url_for('create_tour') }}" class="alert-link">Create your first tour</a>
+</div>
+{% endif %}
+
+
+<!-- ADMIN PROFILE -->
+{% elif current_user.user_type == 'admin' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold"><i class="bi bi-shield-check me-2 text-primary"></i>Admin Dashboard</h2>
+    <p class="text-muted mb-0">Logged in as: <strong>{{ current_user.username }}</strong></p>
+  </div>
+  <span class="badge bg-danger fs-6">Administrator</span>
+</div>
+
+<!-- Platform stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm">
+      <div class="card-body bg-silver-color">
+        <div class="fs-2 text-primary fw-bold">{{ stats.total_guides }}</div>
+        <div class="text-muted small"><i class="bi bi-map me-1"></i>Guides</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm">
+      <div class="card-body bg-silver-color">
+        <div class="fs-2 text-success fw-bold">{{ stats.total_participants }}</div>
+        <div class="text-muted small"><i class="bi bi-people me-1"></i>Participants</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm">
+      <div class="card-body bg-silver-color">
+        <div class="fs-2 text-info fw-bold">{{ stats.total_tours }}</div>
+        <div class="text-muted small"><i class="bi bi-compass me-1"></i>Tours</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center shadow-sm">
+      <div class="card-body bg-silver-color">
+        <div class="fs-2 text-warning fw-bold">{{ stats.total_reservations }}</div>
+        <div class="text-muted small"><i class="bi bi-calendar-check me-1"></i>Reservations</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reservations per language -->
+<div class="card mb-4 shadow-sm bg-silver-color">
+  <div class="card-header">
+    <h6 class="mb-0"><i class="bi bi-translate me-1"></i>Reservations by Language</h6>
+  </div>
+  <div class="card-body">
+    <div class="row g-2">
+      {% for lang, count in stats.lang_stats.items() %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="border rounded p-2 text-center">
+          <div class="fw-bold">{{ lang }}</div>
+          <div class="text-muted small">{{ count }} reservation(s)</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Guide list with their tours -->
+<h4 class="mb-3"><i class="bi bi-people me-1"></i>All Guides</h4>
+{% for guide in guides %}
+<div class="card mb-3 shadow-sm">
+  <div class="card-header">
+    <strong>{{ guide.first_name }} {{ guide.last_name }}</strong>
+    <span class="text-muted ms-2 small">{{ guide.email }}</span>
+    <span class="badge bg-light text-dark ms-2">
+      <i class="bi bi-translate me-1"></i>{{ guide.languages | replace(',', ', ') if guide.languages else '–' }}
+    </span>
+  </div>
+  <div class="card-body py-2">
+    {% if guide.tours %}
+    <ul class="list-group list-group-flush">
+      {% for t in guide.tours %}
+      <li class="list-group-item px-0 py-1">
+        <strong>{{ t.title }}</strong>
+        <span class="badge bg-secondary ms-1">{{ t.language }}</span>
+        <span class="badge bg-light text-dark ms-1">{{ t.duration }} min</span>
+        <a href="{{ url_for('tour_detail', tour_id=t.id) }}" class="ms-2 small">View</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <span class="text-muted small">No tours created yet.</span>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}
