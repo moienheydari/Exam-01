@@ -20,6 +20,8 @@
 {% set bg_class = 'bg-guide' %}
 {% elif current_user.is_authenticated and current_user.user_type == 'participant' %}
 {% set bg_class = 'bg-participant' %}
+{% elif current_user.is_authenticated and current_user.user_type == 'admin' %}
+{% set bg_class = 'bg-admin' %}
 {% else %}
 {% set bg_class = 'bg-guest' %}
 {% endif %}
@@ -38,43 +40,45 @@
       </a>
 
       <!-- Top-right nav -->
-      <ul class="nav nav-pills">
-        {% if not current_user.is_authenticated %}
-        <li class="nav-item">
-          <a href="{{ url_for('login') }}" class="nav-link text-primary" id="nav-login">
-            <i class="bi bi-box-arrow-in-right me-1 text-primary"></i>Login
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="{{ url_for('register') }}" class="nav-link text-primary" id="nav-register">
-            <i class="bi bi-person-plus me-1 text-primary"></i>Register
-          </a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a href="{{ url_for('profile') }}" class="nav-link text-primary" id="nav-profile">
-            <i class="bi bi-person-circle me-1 text-primary"></i>
-            {% if current_user.user_type == 'admin' %}
-            {{ current_user.username }}
-            {% else %}
-            {{ current_user.first_name }} {{ current_user.last_name }}
-            {% endif %}
-          </a>
-        </li>
-        {% if current_user.user_type == 'guide' %}
-        <li class="nav-item">
-          <a href="{{ url_for('create_tour') }}" class="nav-link text-primary" id="nav-create-tour">
-            <i class="bi bi-plus-circle me-1 text-primary"></i>New Tour
-          </a>
-        </li>
-        {% endif %}
-        <li class="nav-item">
-          <a href="{{ url_for('logout') }}" class="nav-link text-primary" id="nav-logout">
-            <i class="bi bi-box-arrow-right me-1 text-primary"></i>Logout
-          </a>
-        </li>
-        {% endif %}
-      </ul>
+      <nav aria-label="Main Navigation">
+        <ul class="nav nav-pills">
+          {% if not current_user.is_authenticated %}
+          <li class="nav-item">
+            <a href="{{ url_for('login') }}" class="nav-link text-primary" id="nav-login">
+              <i class="bi bi-box-arrow-in-right me-1 text-primary"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url_for('register') }}" class="nav-link text-primary" id="nav-register">
+              <i class="bi bi-person-plus me-1 text-primary"></i>Register
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a href="{{ url_for('profile') }}" class="nav-link text-primary" id="nav-profile">
+              <i class="bi bi-person-circle me-1 text-primary"></i>
+              {% if current_user.user_type == 'admin' %}
+              {{ current_user.username }}
+              {% else %}
+              {{ current_user.first_name }} {{ current_user.last_name }}
+              {% endif %}
+            </a>
+          </li>
+          {% if current_user.user_type == 'guide' %}
+          <li class="nav-item">
+            <a href="{{ url_for('create_tour') }}" class="nav-link text-primary" id="nav-create-tour">
+              <i class="bi bi-plus-circle me-1 text-primary"></i>New Tour
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a href="{{ url_for('logout') }}" class="nav-link text-primary" id="nav-logout">
+              <i class="bi bi-box-arrow-right me-1 text-primary"></i>Logout
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
     </header>
 
     <!-- Flash messages -->

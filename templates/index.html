@@ -5,7 +5,7 @@
 {% block content %}
 
 <!-- Hero Section -->
-<div class="row align-items-center py-7 mb-5 g-5">
+<section class="row align-items-center py-7 mb-5 g-5" aria-label="Introduction and features">
   <div class="col-lg-7">
     <div
       class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill mb-3 fw-semibold">
@@ -24,7 +24,7 @@
   </div>
   <div class="col-lg-5 col-xl-4 ms-auto">
     <!-- Side Card -->
-    <div class="card shadow border-0 overflow-hidden">
+    <aside class="card shadow border-0 overflow-hidden">
       <div class="card-header text-white py-3 px-4 border-0 experience-card-header">
         <h5 class="mb-0 fw-bold d-flex align-items-center">
           <i class="bi bi-journal-check text-primary me-2"></i> Our Space Tour Experience
@@ -62,9 +62,9 @@
           </li>
         </ul>
       </div>
-    </div>
+    </aside>
   </div>
-</div>
+</section>
 
 <!-- Filter bar -->
 <div id="tours-anchor" class="mb-2 tours-anchor"></div>
@@ -131,13 +131,13 @@
 <section class="calendar-grid">
   {% for day in day_order %}
   {% set day_date = week_dates[day] %}
-  <div class="day-column">
+  <section class="day-column">
 
     <!-- Day header -->
-    <div class="text-center fw-bold border-bottom pb-1 mb-2 small">
+    <header class="text-center fw-bold border-bottom pb-1 mb-2 small">
       {{ day }}<br>
       <span class="text-muted fw-normal">{{ day_date.strftime('%b %d') }}</span>
-    </div>
+    </header>
 
     <!-- Tour cards -->
     {% if calendar[day] %}
@@ -178,13 +178,13 @@
     <p class="text-center mt-2 text-white">—</p>
     {% endif %}
 
-  </div>
+  </section>
   {% endfor %}
 </section>
 
 <div id="db-dump-data" style="display: none;" data-dump='{{ db_dump | tojson | safe }}'></div>
 <script>
-  (function() {
+  (function () {
     const el = document.getElementById('db-dump-data');
     if (el) {
       try {

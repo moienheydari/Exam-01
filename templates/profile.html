@@ -7,20 +7,20 @@
 <!-- PARTICIPANT PROFILE -->
 {% if current_user.user_type == 'participant' %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<header class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h2><i class="bi bi-person-circle me-2 text-primary"></i>{{ current_user.first_name }} {{ current_user.last_name }}
     </h2>
     <p class="text-muted mb-0 text-primary"><i class="bi bi-envelope me-1 text-primary"></i>{{ current_user.email }}</p>
   </div>
   <span class="badge bg-primary fs-6">Participant</span>
-</div>
+</header>
 
 <h4 class="mb-3 fw-bold"><i class="bi bi-calendar-check me-1 text-primary"></i>My Reservations</h4>
 
 {% if reservations %}
 {% for item in reservations|reverse %}
-<div class="card mb-3 shadow-sm border-0">
+<article class="card mb-3 shadow-sm border-0">
   <div class="card-body {{ 'bg-grey-color' if item.is_past else 'bg-silver-color' }}">
     <div class="row align-items-center ">
       <div class="col-12 col-md-8">
@@ -76,7 +76,7 @@
       </div>
     </div>
   </div>
-</div>
+</article>
 {% endfor %}
 {% else %}
 <div class="alert alert-info">
@@ -90,7 +90,7 @@
 <!-- GUIDE PROFILE -->
 {% elif current_user.user_type == 'guide' %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<header class="d-flex justify-content-between align-items-center mb-4">
   <div class="d-flex align-items-center gap-3">
     {% if current_user.profile_img_address %}
     <img src="{{ url_for('static', filename=current_user.profile_img_address) }}" class="guide-avatar"
@@ -118,13 +118,13 @@
       <i class="bi bi-plus-circle me-1"></i>Create New Tour
     </a>
   </div>
-</div>
+</header>
 
 <h4 class="mb-3 fw-bold"><i class="bi bi-map me-1 text-primary"></i>My Tours</h4>
 
 {% if tours %}
 {% for tour_item in tours %}
-<div class="card mb-4 shadow-sm bg-silver-color">
+<article class="card mb-4 shadow-sm bg-silver-color">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0 fw-bold">{{ tour_item.title }}</h5>
     <div class="d-flex gap-2">
@@ -190,7 +190,7 @@
     <p class="text-muted small fst-italic mb-0">No reservations for this tour yet.</p>
     {% endif %}
   </div>
-</div>
+</article>
 {% endfor %}
 {% else %}
 <div class="alert alert-info">
@@ -204,54 +204,54 @@
 <!-- ADMIN PROFILE -->
 {% elif current_user.user_type == 'admin' %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<header class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h2 class="fw-bold"><i class="bi bi-shield-check me-2 text-primary"></i>Admin Dashboard</h2>
     <p class="text-muted mb-0">Logged in as: <strong>{{ current_user.username }}</strong></p>
   </div>
   <span class="badge bg-danger fs-6">Administrator</span>
-</div>
+</header>
 
 <!-- Platform stats -->
-<div class="row g-3 mb-4">
+<section class="row g-3 mb-4" aria-label="Platform Statistics">
   <div class="col-6 col-md-3">
-    <div class="card text-center shadow-sm">
+    <article class="card text-center shadow-sm">
       <div class="card-body bg-silver-color">
         <div class="fs-2 text-primary fw-bold">{{ stats.total_guides }}</div>
         <div class="text-muted small"><i class="bi bi-map me-1"></i>Guides</div>
       </div>
-    </div>
+    </article>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card text-center shadow-sm">
+    <article class="card text-center shadow-sm">
       <div class="card-body bg-silver-color">
         <div class="fs-2 text-success fw-bold">{{ stats.total_participants }}</div>
         <div class="text-muted small"><i class="bi bi-people me-1"></i>Participants</div>
       </div>
-    </div>
+    </article>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card text-center shadow-sm">
+    <article class="card text-center shadow-sm">
       <div class="card-body bg-silver-color">
         <div class="fs-2 text-info fw-bold">{{ stats.total_tours }}</div>
         <div class="text-muted small"><i class="bi bi-compass me-1"></i>Tours</div>
       </div>
-    </div>
+    </article>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card text-center shadow-sm">
+    <article class="card text-center shadow-sm">
       <div class="card-body bg-silver-color">
         <div class="fs-2 text-warning fw-bold">{{ stats.total_reservations }}</div>
         <div class="text-muted small"><i class="bi bi-calendar-check me-1"></i>Reservations</div>
       </div>
-    </div>
+    </article>
   </div>
-</div>
+</section>
 
 <!-- Reservations per language -->
-<div class="card mb-4 shadow-sm bg-silver-color">
+<section class="card mb-4 shadow-sm bg-silver-color" aria-labelledby="lang-stats-title">
   <div class="card-header">
-    <h6 class="mb-0"><i class="bi bi-translate me-1 text-primary"></i>Reservations by Language</h6>
+    <h6 class="mb-0" id="lang-stats-title"><i class="bi bi-translate me-1 text-primary"></i>Reservations by Language</h6>
   </div>
   <div class="card-body">
     <div class="row g-2">
@@ -265,12 +265,12 @@
       {% endfor %}
     </div>
   </div>
-</div>
+</section>
 
 <!-- Guide list with their tours -->
 <h4 class="mb-3 fw-bold"><i class="bi bi-people me-1 text-primary"></i>All Guides</h4>
 {% for guide in guides %}
-<div class="card mb-3 shadow-sm">
+<article class="card mb-3 shadow-sm">
   <div class="card-header">
     <strong>{{ guide.first_name }} {{ guide.last_name }}</strong>
     <span class="text-muted ms-2 small">{{ guide.email }}</span>
@@ -298,7 +298,7 @@
     <span class="text-muted small">No tours created yet.</span>
     {% endif %}
   </div>
-</div>
+</article>
 {% endfor %}
 
 {% endif %}

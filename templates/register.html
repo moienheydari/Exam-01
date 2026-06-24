@@ -5,9 +5,9 @@
 {% block content %}
 <div class="row justify-content-center mt-4">
   <div class="col-12 col-md-7">
-    <div class="card shadow-sm">
+    <section class="card shadow-sm" aria-labelledby="register-title">
       <div class="card-body p-4 bg-silver-color">
-        <h2 class="card-title mb-4">
+        <h2 class="card-title mb-4" id="register-title">
           <i class="bi bi-person-plus me-2 text-primary"></i>Create an Account
         </h2>
 
@@ -95,7 +95,7 @@
           <a href="{{ url_for('login') }}">Login here</a>
         </p>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 {% endblock %}
