@@ -24,100 +24,101 @@
 {% set bg_class = 'bg-guest' %}
 {% endif %}
 
-<body class="d-flex flex-column min-vh-100 page-bg {{ bg_class }}" style="background-color: black;">
+<body class="d-flex flex-column min-vh-100 page-bg {{ bg_class }}"">
 
   <!-- Semi-transparent OVerlay -->
-  <div class="d-flex flex-column min-vh-100 page-overlay">
+  <div class=" d-flex flex-column min-vh-100 page-overlay">
 
-    <div class="container">
-      <!-- Header -->
-      <header class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-3 border-bottom">
-        <a href="{{ url_for('home') }}" class="d-flex align-items-center text-decoration-none link-body-emphasis">
-          <i class="bi bi-rocket-takeoff-fill fs-3 me-2 text-primary"></i>
-          <span class="fs-4 fw-bold">Space Tours</span>
-        </a>
+  <div class="container">
+    <!-- Header -->
+    <header class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-3 border-bottom">
+      <a href="{{ url_for('home') }}" class="d-flex align-items-center text-decoration-none link-body-emphasis">
+        <i class="bi bi-rocket-takeoff-fill fs-3 me-2 text-primary"></i>
+        <span class="fs-4 fw-bold">Space Tours</span>
+      </a>
 
-        <!-- Top-right nav -->
-        <ul class="nav nav-pills">
-          {% if not current_user.is_authenticated %}
-          <li class="nav-item">
-            <a href="{{ url_for('login') }}" class="nav-link text-primary" id="nav-login">
-              <i class="bi bi-box-arrow-in-right me-1 text-primary"></i>Login
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('register') }}" class="nav-link text-primary" id="nav-register">
-              <i class="bi bi-person-plus me-1 text-primary"></i>Register
-            </a>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a href="{{ url_for('profile') }}" class="nav-link text-primary" id="nav-profile">
-              <i class="bi bi-person-circle me-1 text-primary"></i>
-              {% if current_user.user_type == 'admin' %}
-              {{ current_user.username }}
-              {% else %}
-              {{ current_user.first_name }} {{ current_user.last_name }}
-              {% endif %}
-            </a>
-          </li>
-          {% if current_user.user_type == 'guide' %}
-          <li class="nav-item">
-            <a href="{{ url_for('create_tour') }}" class="nav-link text-primary" id="nav-create-tour">
-              <i class="bi bi-plus-circle me-1 text-primary"></i>New Tour
-            </a>
-          </li>
-          {% endif %}
-          <li class="nav-item">
-            <a href="{{ url_for('logout') }}" class="nav-link text-primary" id="nav-logout">
-              <i class="bi bi-box-arrow-right me-1 text-primary"></i>Logout
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </header>
-
-      <!-- Flash messages -->
-      <div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
+      <!-- Top-right nav -->
+      <ul class="nav nav-pills">
+        {% if not current_user.is_authenticated %}
+        <li class="nav-item">
+          <a href="{{ url_for('login') }}" class="nav-link text-primary" id="nav-login">
+            <i class="bi bi-box-arrow-in-right me-1 text-primary"></i>Login
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('register') }}" class="nav-link text-primary" id="nav-register">
+            <i class="bi bi-person-plus me-1 text-primary"></i>Register
+          </a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a href="{{ url_for('profile') }}" class="nav-link text-primary" id="nav-profile">
+            <i class="bi bi-person-circle me-1 text-primary"></i>
+            {% if current_user.user_type == 'admin' %}
+            {{ current_user.username }}
+            {% else %}
+            {{ current_user.first_name }} {{ current_user.last_name }}
+            {% endif %}
+          </a>
+        </li>
+        {% if current_user.user_type == 'guide' %}
+        <li class="nav-item">
+          <a href="{{ url_for('create_tour') }}" class="nav-link text-primary" id="nav-create-tour">
+            <i class="bi bi-plus-circle me-1 text-primary"></i>New Tour
+          </a>
+        </li>
         {% endif %}
-        {% endwith %}
+        <li class="nav-item">
+          <a href="{{ url_for('logout') }}" class="nav-link text-primary" id="nav-logout">
+            <i class="bi bi-box-arrow-right me-1 text-primary"></i>Logout
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </header>
+
+    <!-- Flash messages -->
+    <div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      {% set alert_class = 'warning' if category == 'message' else ('danger' if category == 'error' else category) %}
+      <div class="alert alert-{{ alert_class }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-
-      <!-- Main content -->
-      <main class="mb-5">
-        {% block content %}{% endblock %}
-      </main>
-
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
     </div>
 
-    <!-- Footer -->
-    <footer class="mt-auto border-top">
-      <div class="container py-3">
-        <div class="row align-items-center">
-          <div class="col-12 col-md-6 mb-2 mb-md-0">
-            <span class="text-primary">
-              <i class="bi bi-rocket-takeoff-fill me-1 text-primary"></i>
-              © 2026 Space Tours – Outer Wilds. All rights reserved.
-            </span>
-          </div>
-          <div class="col-12 col-md-6">
-            <ul class="nav justify-content-md-end justify-content-start">
-              <li class="nav-item">
-                <a href="{{ url_for('home') }}" class="nav-link px-2 text-primary">Home</a>
-              </li>
-            </ul>
-          </div>
+    <!-- Main content -->
+    <main class="mb-5">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-top">
+    <div class="container py-3">
+      <div class="row align-items-center">
+        <div class="col-12 col-md-6 mb-2 mb-md-0">
+          <span class="text-primary">
+            <i class="bi bi-rocket-takeoff-fill me-1 text-primary"></i>
+            © 2026 Space Tours – Outer Wilds. All rights reserved.
+          </span>
+        </div>
+        <div class="col-12 col-md-6">
+          <ul class="nav justify-content-md-end justify-content-start">
+            <li class="nav-item">
+              <a href="{{ url_for('home') }}" class="nav-link px-2 text-primary">Home</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
+    </div>
+  </footer>
 
   </div>
 
