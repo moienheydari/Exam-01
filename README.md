@@ -12,5 +12,5 @@ part. users : email, password, first name, last name
 - John Doe, verygood@gmail.com, testyes
 
 admin user : username, password
-- moienheydari, admin123
+- moienheydari@gamil.com, admin123
 
