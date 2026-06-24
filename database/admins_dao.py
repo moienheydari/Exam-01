@@ -38,4 +38,4 @@ def get_admin_by_id(admin_id):
         return row
     except sqlite3.Error as e:
         print(f"Database error: {e}")
-        return None
+        return None

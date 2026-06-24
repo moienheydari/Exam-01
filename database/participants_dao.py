@@ -78,4 +78,4 @@ def get_all_participants():
         return rows
     except sqlite3.Error as e:
         print(f"Database error: {e}")
-        return []
+        return []
