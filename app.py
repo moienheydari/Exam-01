@@ -15,6 +15,7 @@ sqlite3.connect = _patched_connect
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import ops
+import validators
 from datetime import date, datetime
 import os
 
@@ -123,6 +124,13 @@ def book_tour(tour_id):
     addit_1 = request.form.get('addit_person_1', '').strip() or None
     addit_2 = request.form.get('addit_person_2', '').strip() or None
     addit_3 = request.form.get('addit_person_3', '').strip() or None
+    current_tour = tours_dao.get_tour_by_id(tour_id)
+    is_valid, err_msg = validators.validate_booking(
+        selected_date, selected_time, person_count, addit_1, addit_2, addit_3, current_tour, pid
+    )
+    if not is_valid:
+        flash(err_msg, 'danger')
+        return redirect(url_for('tour_detail', tour_id=tour_id))
 
     success, message = ops.book_tour_op(
         tour_id=tour_id,
@@ -146,8 +154,9 @@ def book_tour(tour_id):
 @login_required
 def cancel_reservation(reservation_id):
     """Cancel a reservation (participant only, must be >24h before start)"""
-    if current_user.user_type != 'participant':
-        flash('Only participants can cancel reservations.', 'danger')
+    is_valid, err_msg = validators.validate_cancellation(reservation_id, current_user.user_type)
+    if not is_valid:
+        flash(err_msg, 'danger')
         return redirect(url_for('profile'))
 
     _, pid = current_user.id.split('_', 1)
@@ -171,6 +180,11 @@ def authenticate():
     credential = request.form.get('txt_email', '').strip()
     password = request.form.get('txt_password', '').strip()
     next_url = request.args.get('next')
+
+    is_valid, err_msg = validators.validate_authentication(credential, password)
+    if not is_valid:
+        flash(err_msg, 'danger')
+        return redirect(url_for('login', next=next_url))
 
     user, message = ops.authenticate_user(credential, password)
     if user:
@@ -203,6 +217,16 @@ def signup():
     last_name = request.form.get('txt_last_name', '').strip()
     email = request.form.get('txt_email', '').strip()
     password = request.form.get('txt_password', '').strip()
+
+    languages_list = request.form.getlist('languages')
+    profile_img = request.files.get('profile_img')
+
+    is_valid, err_msg = validators.validate_signup(
+        user_type, first_name, last_name, email, password, languages_list, profile_img
+    )
+    if not is_valid:
+        flash(err_msg, 'danger')
+        return redirect(url_for('register'))
 
     # File uploads remain in the web controller layer
     profile_img_address = None
@@ -243,6 +267,8 @@ def profile():
     if current_user.user_type == 'participant':
         _, pid = current_user.id.split('_', 1)
         reservations = ops.get_participant_profile_data(pid)
+        # Sort reservations chronologically by date and time
+        reservations.sort(key=lambda r: (r['reserved_tour']['date'], r['reserved_tour']['time']))
         return render_template('profile.html', reservations=reservations)
 
     elif current_user.user_type == 'guide':
@@ -291,8 +317,18 @@ def create_tour():
 
         # Read times dictionary from form
         form_times = {day: request.form.get(f'time_{day}', '').strip() for day in ops.DAY_ORDER}
+        stops = request.form.getlist('stops')
 
-        # Handle 5 photo uploads
+        # Validate using validators module
+        photo_files = {f'photo_{i}': request.files.get(f'photo_{i}') for i in range(1, 6)}
+        is_valid, err_msg = validators.validate_create_tour(
+            title, description, duration, language, max_part_count, meetpoint_place_id, new_meetpoint, days, form_times, stops, guide_languages, photo_files
+        )
+        if not is_valid:
+            flash(err_msg, 'danger')
+            return render_template('create_tour.html', languages=guide_languages, places=all_places, day_order=ops.DAY_ORDER)
+
+        # Handle 5 photo uploads now that validation has succeeded
         photo_addresses = []
         for i in range(1, 6):
             photo = request.files.get(f'photo_{i}')
@@ -304,8 +340,6 @@ def create_tour():
                 photo_addresses.append(f"images/tour_imgs/{filename}")
             else:
                 photo_addresses.append(None)
-
-        stops = request.form.getlist('stops')
 
         success, message, tour_id = ops.create_tour_op(
             title=title,
@@ -387,8 +421,18 @@ def edit_tour(tour_id):
         days = request.form.getlist('schedule_days')
 
         form_times = {day: request.form.get(f'time_{day}', '').strip() for day in ops.DAY_ORDER}
+        stops = request.form.getlist('stops')
 
-        # Photo updates
+        # Validate using validators module
+        photo_files = {f'photo_{i}': request.files.get(f'photo_{i}') for i in range(1, 6)}
+        is_valid, err_msg = validators.validate_edit_tour(
+            title, description, duration, language, max_part_count, meetpoint_place_id, new_meetpoint, days, form_times, stops, guide_languages, photo_files, has_reservations
+        )
+        if not is_valid:
+            flash(err_msg, 'danger')
+            return render_template('edit_tour.html', tour=dict(tour), schedule=schedule, has_reservations=has_reservations, places=all_places, guide_languages=guide_languages, current_stops=current_stops, day_order=ops.DAY_ORDER)
+
+        # Photo updates (only if validation succeeded)
         photo_addresses = []
         for i in range(1, 6):
             photo = request.files.get(f'photo_{i}')
@@ -400,8 +444,6 @@ def edit_tour(tour_id):
                 photo_addresses.append(f"images/tour_imgs/{filename}")
             else:
                 photo_addresses.append(None)
-
-        stops = request.form.getlist('stops')
 
         success, message = ops.edit_tour_op(
             tour_id=tour_id,
@@ -457,16 +499,21 @@ def report_tour(reserved_tour_id):
 
     if request.method == 'POST':
         actual_count = request.form.get('actual_part_count', '').strip()
-        
-        # Handle file upload
-        proof_img_address = None
+
+        # Validate using validators module
         proof_img = request.files.get('proof_img')
-        if proof_img and proof_img.filename:
-            ext = proof_img.filename.rsplit('.', 1)[-1].lower()
-            filename = f"proof_{int(datetime.now().timestamp())}.{ext}"
-            save_path = os.path.join('static', 'images', 'proof_imgs', filename)
-            proof_img.save(save_path)
-            proof_img_address = f"images/proof_imgs/{filename}"
+        is_valid, err_msg = validators.validate_report_tour(
+            actual_count, rt['expected_part_count'], rt['date'], rt['time'], proof_img
+        )
+        if not is_valid:
+            flash(err_msg, 'danger')
+            return render_template('report_tour.html', rt=dict(rt), tour=dict(tour))
+
+        # Save the photo and compile proof_img_address now that validation succeeded
+        filename = f"proof_{int(datetime.now().timestamp())}.{ext}"
+        save_path = os.path.join('static', 'images', 'proof_imgs', filename)
+        proof_img.save(save_path)
+        proof_img_address = f"images/proof_imgs/{filename}"
 
         success, message = ops.report_tour_op(
             reserved_tour_id=reserved_tour_id,
