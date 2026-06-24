@@ -204,23 +204,6 @@ def get_tour_detail_data(tour_id, participant_id=None):
 
 def book_tour_op(tour_id, participant_id, selected_date, selected_time, person_count, addit_1=None, addit_2=None, addit_3=None):
     """Handle booking logic, checking constraints and updating the DB"""
-    if not selected_date or not selected_time:
-        return False, 'Please select a date.'
-
-    if not 1 <= person_count <= 4:
-        return False, 'Person count must be between 1 and 4.'
-
-    # Validate additional people names when person_count > 1
-    if person_count >= 2:
-        if not addit_1 or len(addit_1.strip()) < 3:
-            return False, 'Please provide a valid name for additional person 1 (minimum 3 characters).'
-    if person_count >= 3:
-        if not addit_2 or len(addit_2.strip()) < 3:
-            return False, 'Please provide a valid name for additional person 2 (minimum 3 characters).'
-    if person_count >= 4:
-        if not addit_3 or len(addit_3.strip()) < 3:
-            return False, 'Please provide a valid name for additional person 3 (minimum 3 characters).'
-
     tour = tours_dao.get_tour_by_id(tour_id)
     if not tour:
         return False, 'Tour not found.'
@@ -284,8 +267,6 @@ def cancel_reservation_op(reservation_id, participant_id):
 
 def authenticate_user(credential, password):
     """Authenticate guide, participant, or admin. Returns (user_obj, welcome_message) or (None, error)"""
-    if not credential or not password:
-        return None, 'Please fill in all fields.'
 
     # Try guides (by email)
     db_user = guides_dao.get_guide_by_email(credential)
@@ -328,21 +309,12 @@ def authenticate_user(credential, password):
 
 def signup_user(user_type, first_name, last_name, email, password, languages=None, profile_img_address=None):
     """Handle sign up business logic"""
-    if not all([user_type, first_name, last_name, email, password]):
-        return False, 'Please fill in all required fields.'
-
-    if len(password) < 6:
-        return False, 'Password must be at least 6 characters.'
-
     if guides_dao.get_guide_by_email(email) or participants_dao.get_participant_by_email(email):
         return False, 'This email address is already registered.'
 
     hashed = generate_password_hash(password)
 
     if user_type == 'guide':
-        if not languages:
-            return False, 'Guides must select at least one spoken language.'
-
         gid = guides_dao.create_guide(first_name, last_name, email, hashed, languages, profile_img_address)
         if gid:
             return True, 'Guide account created successfully! Please log in.'
@@ -463,36 +435,25 @@ def get_admin_profile_data():
 
 def create_tour_op(title, description, duration, language, max_part_count, meetpoint_place_id, new_meetpoint, days, form_times, photo_addresses, stops, guide_id):
     """Business logic for creating a new tour and its itinerary stops"""
-    if not all([title, description, duration, language, max_part_count]):
-        return False, 'Please fill in all required fields.', None
-
     # Convert full language name to code
     language = LANGUAGES.get(language, language)
-
-    if not days:
-        return False, 'Please select at least one day for the weekly schedule.', None
 
     # Resolve meeting point
     if new_meetpoint:
         place_id = places_dao.create_place(new_meetpoint)
-    elif meetpoint_place_id:
-        place_id = int(meetpoint_place_id)
     else:
-        return False, 'Please specify a meeting point.', None
+        place_id = int(meetpoint_place_id)
 
     # Build schedule string
     schedule_parts = []
     for day in DAY_ORDER:
         if day in days:
             time_val = form_times.get(day, '').strip()
-            if not time_val:
-                return False, f'Please enter a time for {day}.', None
             schedule_parts.append(f"{day}_{time_val}")
         else:
             schedule_parts.append(f"{day}_X")
     schedule = ';'.join(schedule_parts)
 
-    
     tour_id = tours_dao.create_tour(
         title, guide_id, schedule, place_id,
         int(duration), language, int(max_part_count), description,
@@ -599,17 +560,6 @@ def report_tour_op(reserved_tour_id, guide_id, actual_count, proof_img_address=N
     tour = tours_dao.get_tour_by_id(rt['tour_id'])
     if not tour or str(tour['guide_id']) != str(guide_id):
         return False, 'You can only report your own tours.'
-
-    try:
-        tour_dt = datetime.strptime(f"{rt['date']} {rt['time']}", "%Y-%m-%d %H:%M")
-    except ValueError:
-        return False, 'Invalid tour date/time.'
-
-    if datetime.now() <= tour_dt:
-        return False, 'You can only report tours that have already taken place.'
-
-    if not actual_count:
-        return False, 'Please enter the actual participant count.'
 
     final_proof_img = proof_img_address if proof_img_address else rt['proof_img_address']
     reserved_tours_dao.update_reserved_tour(

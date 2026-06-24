@@ -383,6 +383,9 @@ def edit_tour(tour_id):
         flash('Tour not found.', 'danger')
         return redirect(url_for('profile'))
 
+    tour_dict = dict(tour)
+    schedule = ops.parse_schedule(tour_dict['schedule'])
+
     if str(tour['guide_id']) != gid:
         flash('You can only edit your own tours.', 'danger')
         return redirect(url_for('profile'))
@@ -430,7 +433,7 @@ def edit_tour(tour_id):
         )
         if not is_valid:
             flash(err_msg, 'danger')
-            return render_template('edit_tour.html', tour=dict(tour), schedule=schedule, has_reservations=has_reservations, places=all_places, guide_languages=guide_languages, current_stops=current_stops, day_order=ops.DAY_ORDER)
+            return render_template('edit_tour.html', tour=tour_dict, schedule=schedule, has_reservations=has_reservations, places=all_places, guide_languages=guide_languages, current_stops=current_stops, day_order=ops.DAY_ORDER)
 
         # Photo updates (only if validation succeeded)
         photo_addresses = []
@@ -464,8 +467,6 @@ def edit_tour(tour_id):
         flash(message, 'success' if success else 'danger')
         return redirect(url_for('profile'))
 
-    tour_dict = dict(tour)
-    schedule = ops.parse_schedule(tour_dict['schedule'])
     return render_template('edit_tour.html',
                            tour=tour_dict,
                            schedule=schedule,
@@ -510,6 +511,7 @@ def report_tour(reserved_tour_id):
             return render_template('report_tour.html', rt=dict(rt), tour=dict(tour))
 
         # Save the photo and compile proof_img_address now that validation succeeded
+        ext = proof_img.filename.rsplit('.', 1)[-1].lower()
         filename = f"proof_{int(datetime.now().timestamp())}.{ext}"
         save_path = os.path.join('static', 'images', 'proof_imgs', filename)
         proof_img.save(save_path)

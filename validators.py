@@ -24,7 +24,7 @@ def validate_booking(selected_date, selected_time, person_count, addit_1, addit_
     offered_dates = ops.get_next_dates(current_tour['schedule'], weeks=4)
     is_offered = any(str(d['date']) == selected_date and d['time'] == selected_time for d in offered_dates)
     if not is_offered:
-        return False, 'This tour is not offered on the selected date and time.'
+        return False, 'This tour is not offered on the selected date and time (in the next 4 weeks).'
 
     # Validate party size and additional names
     if not 1 <= person_count <= 4:
