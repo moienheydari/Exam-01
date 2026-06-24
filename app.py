@@ -1,3 +1,17 @@
+import sqlite3
+import os
+
+# Monkeypatch sqlite3.connect to ensure the absolute path is always used
+_original_connect = sqlite3.connect
+
+def _patched_connect(database, *args, **kwargs):
+    if database == "database/space_tours.db":
+        db_dir = os.path.dirname(os.path.abspath(__file__))
+        database = os.path.join(db_dir, "database", "space_tours.db")
+    return _original_connect(database, *args, **kwargs)
+
+sqlite3.connect = _patched_connect
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import ops
