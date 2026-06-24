@@ -49,13 +49,16 @@ def home():
 
     calendar, week_dates = ops.get_home_calendar_data(selected_date=selected_date)
 
+    db_dump = ops.get_database_dump()
+
     return render_template('index.html',
                            calendar=calendar,
                            day_order=ops.DAY_ORDER,
                            week_dates=week_dates,
                            languages=ops.LANGUAGES.keys(),
                            selected_date=selected_date,
-                           today=today)
+                           today=today,
+                           db_dump=db_dump)
 
 
 @app.route('/tour/<int:tour_id>')

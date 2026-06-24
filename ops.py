@@ -619,3 +619,25 @@ def report_tour_op(reserved_tour_id, guide_id, actual_count, proof_img_address=N
         reported=1
     )
     return True, 'Tour reported successfully!'
+
+
+def get_database_dump():
+    """Retrieve all rows from all database tables as a dictionary for debugging"""
+    import sqlite3
+    tables = ['Guides', 'Participants', 'Admins', 'Tours', 'Places', 'Reserved_Tours', 'Reservations', 'Tour_Visiting_Places']
+    dump = {}
+    try:
+        conn = sqlite3.connect("database/space_tours.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        for table in tables:
+            try:
+                cursor.execute(f"SELECT * FROM {table}")
+                dump[table] = [dict(row) for row in cursor.fetchall()]
+            except sqlite3.Error as e:
+                dump[table] = f"Error: {e}"
+        cursor.close()
+        conn.close()
+    except sqlite3.Error as e:
+        dump['error'] = str(e)
+    return dump

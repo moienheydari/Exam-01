@@ -182,4 +182,19 @@
   {% endfor %}
 </section>
 
+<div id="db-dump-data" style="display: none;" data-dump='{{ db_dump | tojson | safe }}'></div>
+<script>
+  (function() {
+    const el = document.getElementById('db-dump-data');
+    if (el) {
+      try {
+        const dump = JSON.parse(el.getAttribute('data-dump'));
+        console.log("=== DATABASE DUMP ===", dump);
+      } catch (e) {
+        console.error("Failed to parse database dump:", e);
+      }
+    }
+  })();
+</script>
+
 {% endblock %}
