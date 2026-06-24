@@ -251,7 +251,7 @@
 <!-- Reservations per language -->
 <div class="card mb-4 shadow-sm bg-silver-color">
   <div class="card-header">
-    <h6 class="mb-0"><i class="bi bi-translate me-1"></i>Reservations by Language</h6>
+    <h6 class="mb-0"><i class="bi bi-translate me-1 text-primary"></i>Reservations by Language</h6>
   </div>
   <div class="card-body">
     <div class="row g-2">
@@ -268,14 +268,17 @@
 </div>
 
 <!-- Guide list with their tours -->
-<h4 class="mb-3"><i class="bi bi-people me-1"></i>All Guides</h4>
+<h4 class="mb-3 fw-bold"><i class="bi bi-people me-1 text-primary"></i>All Guides</h4>
 {% for guide in guides %}
 <div class="card mb-3 shadow-sm">
   <div class="card-header">
     <strong>{{ guide.first_name }} {{ guide.last_name }}</strong>
     <span class="text-muted ms-2 small">{{ guide.email }}</span>
     <span class="badge bg-light text-dark ms-2">
-      <i class="bi bi-translate me-1"></i>{{ guide.languages | replace(',', ', ') if guide.languages else '–' }}
+      <i class="bi bi-translate me-1 text-primary"></i>
+      {%for lan in guide.languages %}
+      {{lan + ', ' if lan != guide.languages[-1] else lan}}
+      {%endfor%}
     </span>
   </div>
   <div class="card-body py-2">
@@ -286,7 +289,8 @@
         <strong>{{ t.title }}</strong>
         <span class="badge bg-secondary ms-1">{{ t.language }}</span>
         <span class="badge bg-light text-dark ms-1">{{ t.duration }} min</span>
-        <a href="{{ url_for('tour_detail', tour_id=t.id) }}" class="ms-2 small">View</a>
+        <a href="{{ url_for('tour_detail', tour_id=t.id) }}"
+          class="ms-2 small btn btn-sm btn-primary py-0 px-1">View</a>
       </li>
       {% endfor %}
     </ul>
