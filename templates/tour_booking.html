@@ -185,10 +185,79 @@
         </div>
 
         {% elif current_user.is_authenticated and current_user.user_type == 'admin' %}
-        <div class="alert alert-secondary mb-0">
-          <i class="bi bi-shield-check me-1"></i>
-          Administrator view.
+        <div class="alert alert-secondary mb-3">
+          <i class="bi bi-shield-check me-1 text-primary"></i>
+          <strong>Administrator View</strong>
         </div>
+
+        <h5 class="card-title fw-bold mb-3"><i class="bi bi-calendar3 me-1 text-primary"></i>All Reservations</h5>
+
+        {% if all_reserved_tours %}
+        <div class="accordion" id="adminReservationsAccordion">
+          {% for rt in all_reserved_tours %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-rt-{{ rt.id }}">
+              <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse-rt-{{ rt.id }}" aria-expanded="false" aria-controls="collapse-rt-{{ rt.id }}">
+                <div>
+                  <strong class="text-primary">{{ rt.date }}</strong> at <strong>{{ rt.time }}</strong>
+                  <div class="small text-muted">
+                    {{ rt.expected_part_count }} reserved
+                    {% if rt.reported %}
+                    | <span class="text-success">Reported ({{ rt.actual_part_count }} attended)</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </button>
+            </h2>
+            <div id="collapse-rt-{{ rt.id }}" class="accordion-collapse collapse"
+              aria-labelledby="heading-rt-{{ rt.id }}" data-bs-parent="#adminReservationsAccordion">
+              <div class="accordion-body p-2">
+                <!-- Report Details -->
+                <div class="mb-3 p-2 bg-light rounded border">
+                  <h6 class="fw-bold mb-1 small text-secondary">Report Details</h6>
+                  <ul class="list-unstyled mb-0 small">
+                    <li><strong>Status:</strong> {% if rt.reported %}<span class="text-success">Reported</span>{% else
+                      %}<span class="text-warning">Pending Report</span>{% endif %}</li>
+                    {% if rt.reported %}
+                    <li><strong>Actual Attendance:</strong> {{ rt.actual_part_count }} participants</li>
+                    <li>
+                      <strong>Proof Image:</strong>
+                      <a href="{{ url_for('static', filename=rt.proof_img_address) }}" target="_blank">View Proof
+                        Photo</a>
+                    </li>
+                    {% endif %}
+                  </ul>
+                </div>
+
+                <!-- Bookings -->
+                <h6 class="fw-bold mb-2 small text-secondary">Bookings ({{ rt.reservations | length }})</h6>
+                <ul class="list-group list-group-flush small">
+                  {% for res in rt.reservations %}
+                  <li class="list-group-item px-0 py-2">
+                    <div class="d-flex justify-content-between">
+                      <strong>{{ res.participant.first_name }} {{ res.participant.last_name }}</strong>
+                      <span class="badge bg-golden-color text-dark py-1 px-1">{{ res.person_count }} spot(s)</span>
+                    </div>
+                    <div class="text-muted small">{{ res.participant.email }}</div>
+                    {% if res.addit_person_1 %}
+                    <div class="text-muted mt-1" style="font-size: 0.8rem;">
+                      <i class="bi bi-people-fill me-1"></i>Additionals:
+                      {% set addits = [res.addit_person_1, res.addit_person_2, res.addit_person_3] | select | list %}
+                      {{ addits | join(', ') }}
+                    </div>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No scheduled instances or reservations found for this tour.</p>
+        {% endif %}
 
         {% else %}
         <!-- Not logged in -->

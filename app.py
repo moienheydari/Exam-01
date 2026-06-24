@@ -87,7 +87,8 @@ def tour_detail(tour_id):
                            participant_reservations=data.get('participant_reservations', []),
                            available_dates=data['available_dates'],
                            initial_selected_date=initial_selected_date,
-                           initial_selected_time=initial_selected_time)
+                           initial_selected_time=initial_selected_time,
+                           all_reserved_tours=data.get('all_reserved_tours', []))
 
 
 @app.route('/book/<int:tour_id>', methods=['POST'])

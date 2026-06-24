@@ -173,13 +173,32 @@ def get_tour_detail_data(tour_id, participant_id=None):
             is_booked = (str(d['date']), d['time']) in participant_booked_slots
             available_dates.append({**d, 'available': available, 'is_booked': is_booked})
 
+    # Fetch all reserved tours and their reservations/participant details for admin views
+    all_reserved_tours = []
+    raw_rts = reserved_tours_dao.get_reserved_tours_by_tour(tour_id)
+    for rt in raw_rts:
+        rt_dict = dict(rt)
+        res_list = reservations_dao.get_reservations_by_reserved_tour(rt['id'])
+        enriched_res_list = []
+        for res in res_list:
+            res_dict = dict(res)
+            part = participants_dao.get_participant_by_id(res['participant_id'])
+            if part:
+                res_dict['participant'] = dict(part)
+            enriched_res_list.append(res_dict)
+        rt_dict['reservations'] = enriched_res_list
+        all_reserved_tours.append(rt_dict)
+
+    all_reserved_tours.sort(key=lambda rt: (rt['date'], rt['time']))
+
     return {
         'tour': tour,
         'guide': dict(guide) if guide else None,
         'meetpoint_name': meetpoint['name'] if meetpoint else 'Unknown',
         'stops': stops,
         'participant_reservations': participant_reservations,
-        'available_dates': available_dates
+        'available_dates': available_dates,
+        'all_reserved_tours': all_reserved_tours
     }
 
 
