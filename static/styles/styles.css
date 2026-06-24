@@ -1,0 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;900&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+:root {
+  --bs-primary: #D4AF37;
+  --bs-primary-rgb: 212, 175, 55;
+  --bs-link-color: #D4AF37;
+  --bs-link-hover-color: #bfa030;
+}
+
+/* Background Colors */
+
+.bg-silver-color {
+  background-color: #f1fcff !important;
+}
+
+.bg-purple-color {
+  background-color: #42213D !important;
+}
+
+.bg-golden-color {
+  background-color: #D4AF37 !important;
+}
+
+.bg-grey-color {
+  background-color: #22222251 !important;
+}
+
+/* Override Bootstrap Colors */
+.text-primary {
+  color: #D4AF37 !important;
+}
+
+.fw-black {
+  font-weight: 900;
+}
+
+.btn-primary {
+  border-color: #42213D !important;
+  background-color: #42213D !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  border-color: #3c2037 !important;
+  background-color: #3c2037 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Hide cards during JS filtering */
+.hidden-card {
+  display: none !important;
+}
+
+/* ---- Page background + overlay (base.html) ---- */
+.page-bg {
+  background-color: black;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+.bg-guide {
+  background-image: url('../images/backgrounds/guide_background.jpg');
+}
+
+.bg-participant {
+  background-image: url('../images/backgrounds/partcipant_background.jpg');
+}
+
+.bg-guest {
+  background-image: url('../images/backgrounds/guest_background.jpg');
+}
+
+.page-overlay {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+/* ---- Weekly calendar: 7 equal columns, no scrolling ---- */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  min-height: 100vh;
+}
+
+.day-column {
+  min-width: 0;
+  /* allow flex/grid children to shrink and truncate */
+}
+
+/* Tour card title truncation */
+.tour-card .card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* ---- Filter bar (index.html) ---- */
+.experience-card-header {
+  background: linear-gradient(to right, #3c2037, #42213D);
+}
+
+.py-7 {
+  padding-top: 8.5rem;
+  padding-bottom: 8.5rem;
+}
+
+.tours-anchor {
+  height: 1px;
+}
+
+.date-input {
+  width: 145px;
+}
+
+.date-input-readonly {
+  width: 145px;
+  background: #f8f9fa;
+  cursor: default;
+}
+
+.filter-range {
+  width: 110px;
+}
+
+.filter-range::-webkit-slider-thumb {
+  background-color: #ff9142;
+}
+
+.filter-range::-moz-range-thumb {
+  background-color: #ff9142;
+}
+
+#dur-display {
+  display: inline-block;
+  min-width: 80px;
+}
+
+.lang-dropdown-menu {
+  min-width: 160px;
+}
+
+/* ---- Schedule day/time inputs (create_tour & edit_tour) ---- */
+.day-check-col {
+  min-width: 80px;
+}
+
+.time-input {
+  max-width: 130px;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ---- Profile photo in guide profile ---- */
+.guide-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ---- Photo carousel max height ---- */
+.tour-carousel-img {
+  max-height: 320px;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Stop badge in tour detail */
+.stop-badge {
+  font-size: 0.85rem;
+}
+
+/* Card styling for calendar */
+.tour-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-available {
+  border-left: 4px solid #D4AF37 !important;
+}
+
+.card-reserved {
+  border-left: 4px solid #42213D !important;
+}
+
+/* Special Buttons */
+.btn-goback {
+  color: #42213D;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+  font-weight: 700;
+}
+
+.btn-goback:hover {
+  background-color: #d4af3753;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-report {
+  background-color: #42213D;
+  color: #ffffff;
+  padding: 0rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.btn-report:hover {
+  background-color: #d4af3753;
+  color: #42213D;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
