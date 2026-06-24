@@ -407,11 +407,13 @@ def get_admin_profile_data():
     all_participants = participants_dao.get_all_participants()
     all_tours = tours_dao.get_all_tours()
     all_reservations = reservations_dao.get_all_reservations()
+    reverse_languages = {v: k for k, v in LANGUAGES.items()}
 
     # Reservations per language
     lang_stats = {}
     for tour in all_tours:
-        lang = tour['language']
+        lang_code = tour['language']
+        lang = reverse_languages.get(lang_code, lang_code)
         rt_list = reserved_tours_dao.get_reserved_tours_by_tour(tour['id'])
         for rt in rt_list:
             res_list = reservations_dao.get_reservations_by_reserved_tour(rt['id'])
@@ -429,7 +431,12 @@ def get_admin_profile_data():
     guides_with_tours = []
     for g in all_guides:
         g_dict = dict(g)
-        g_dict['tours'] = [dict(t) for t in tours_dao.get_tours_by_guide(g['id'])]
+        g_dict['languages'] = [reverse_languages.get(code) for code in g_dict['languages'].split(';') if code]
+        g_dict['tours'] = []
+        for t in tours_dao.get_tours_by_guide(g['id']):
+            t_dict = dict(t)
+            t_dict['language'] = reverse_languages.get(t_dict['language'], t_dict['language'])
+            g_dict['tours'].append(t_dict)
         guides_with_tours.append(g_dict)
 
     return stats, guides_with_tours
