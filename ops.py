@@ -627,9 +627,7 @@ def get_database_dump():
     tables = ['Guides', 'Participants', 'Admins', 'Tours', 'Places', 'Reserved_Tours', 'Reservations', 'Tour_Visiting_Places']
     dump = {}
     try:
-        import os
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database', 'space_tours.db')
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect("database/space_tours.db")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         for table in tables:
