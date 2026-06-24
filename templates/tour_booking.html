@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tour.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <!-- Left: Tour details -->
+  <article class="col-12 col-lg-7">
+
+    <!-- Back link -->
+    <a href="{{ url_for('home') }}#tours-anchor" class="btn btn-sm btn-goback mb-3">
+      <i class="bi bi-arrow-left me-1 "></i>Back to all tours
+    </a>
+
+    <h1 class="mb-1 fw-bold">{{ tour.title }}</h1>
+    {% if guide %}
+    <p class="text-muted mb-3">
+      <i class="bi bi-person-badge me-1 text-primary"></i>
+      Guide: <strong>{{ guide.first_name }} {{ guide.last_name }}</strong>
+    </p>
+    {% endif %}
+
+    <!-- Info badges -->
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <span class="badge bg-primary fs-6">
+        <i class="bi bi-translate me-1"></i>{{ tour.language }}
+      </span>
+      <span class="badge bg-purple-color fs-6">
+        <i class="bi bi-hourglass me-1"></i>{{ tour.duration }} min
+      </span>
+      <span class="badge bg-info text-dark fs-6">
+        <i class="bi bi-people me-1"></i>Max {{ tour.max_part_count }} participants
+      </span>
+      <span class="badge bg-success fs-6">
+        <i class="bi bi-geo-alt me-1"></i>Meetpoint: {{ meetpoint }}
+      </span>
+    </div>
+
+    <!-- Description -->
+    <section aria-label="Tour description">
+      <h5 class="fw-bold"><i class="bi bi-info-circle me-1 text-primary"></i>About this tour</h5>
+      <p>{{ tour.description }}</p>
+    </section>
+
+    <!-- Stops -->
+    {% if stops %}
+    <section aria-label="Tour stops" class="mb-3">
+      <h5 class="fw-bold"><i class="bi bi-pin-map me-1 text-primary"></i>Itinerary stops</h5>
+      <ol class="list-group list-group-numbered">
+        {% for stop in stops %}
+        <li class="list-group-item list-group-item-action">{{ stop }}</li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+
+    <!-- Photo carousel -->
+    {% set photos = [tour.photo_1_address, tour.photo_2_address, tour.photo_3_address, tour.photo_4_address,
+    tour.photo_5_address] %}
+    {% set valid_photos = photos | select | list %}
+    {% if valid_photos %}
+    <section aria-label="Tour photos" class="mb-3">
+      <h5 class="fw-bold"><i class="bi bi-images me-1 text-primary"></i>Photos</h5>
+      <div id="tourCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for photo in valid_photos %}
+          <div class="carousel-item {{ 'active' if loop.first else '' }}">
+            <img src="{{ url_for('static', filename=photo) }}" class="d-block w-100 tour-carousel-img"
+              alt="Tour photo {{ loop.index }}">
+          </div>
+          {% endfor %}
+        </div>
+        {% if valid_photos | length > 1 %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#tourCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#tourCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+  </article>
+
+  <!-- Right: Booking panel -->
+  <aside class="col-12 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <!-- Existing reservations -->
+        {% if current_user.is_authenticated and participant_reservations and participant_reservations | length > 0 %}
+        <div class="alert alert-success">
+          <i class="bi bi-check-circle-fill me-1"></i>
+          <strong>You have booked this tour for:</strong>
+          <ul class="mb-0 mt-2">
+            {% for pr in participant_reservations %}
+            <li>
+              <strong>{{ pr.reserved_tour.date }}</strong> at <strong>{{ pr.reserved_tour.time }}</strong>
+              — <small>Party size: {{ pr.reservation.person_count }}</small>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <a href="{{ url_for('profile') }}" class="btn btn-primary mb-5 w-100">
+          <i class="bi bi-person-circle me-1"></i>View my reservations
+        </a>
+        {% endif %}
+
+        <!-- Booking form for logged-in participants -->
+        {% if current_user.is_authenticated and current_user.user_type == 'participant' %}
+        <h5 class="card-title fw-bold"><i class="bi bi-calendar-check me-1 text-primary"></i>Book this tour</h5>
+
+        {% if available_dates %}
+        <form action="{{ url_for('book_tour', tour_id=tour.id) }}" method="post" novalidate>
+
+          <!-- Date select -->
+          <div class="mb-3">
+            <label for="date-select" class="form-label">Select a date</label>
+            <select class="form-select" id="date-select" name="selected_date" required>
+              <option value="">Choose a date…</option>
+              {% for d in available_dates %}
+              <option value="{{ d.date }}" data-time="{{ d.time }}" {% if not d.is_booked and initial_selected_date and
+                initial_selected_time and initial_selected_date==d.date|string and initial_selected_time==d.time
+                %}selected{% endif %} {% if d.is_booked %}disabled title="Already booked by you" {% endif %}>
+                {{ d.date.strftime('%A, %B %d, %Y') }} at {{ d.time }}
+                {% if d.is_booked %}
+                — (Already booked)
+                {% else %}
+                ({{ d.available }} spot{{ 's' if d.available != 1 else '' }} left)
+                {% endif %}
+              </option>
+              {% endfor %}
+            </select>
+            <!-- Hidden field for the time, populated by JS -->
+            <input type="hidden" name="selected_time" id="selected-time" value="{{ initial_selected_time or '' }}">
+          </div>
+
+          <!-- Person count -->
+          <div class="mb-3">
+            <label for="person-count" class="form-label">Number of people (including yourself)</label>
+            <select class="form-select" id="person-count" name="person_count" required>
+              <option value="1">1 – Just me</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+
+          <!-- Additional people names (shown by JS) -->
+          <div id="addit-1" class="mb-2 d-none">
+            <input type="text" class="form-control" name="addit_person_1" placeholder="Additional person 1: First Last"
+              minlength="3">
+          </div>
+          <div id="addit-2" class="mb-2 d-none">
+            <input type="text" class="form-control" name="addit_person_2" placeholder="Additional person 2: First Last"
+              minlength="3">
+          </div>
+          <div id="addit-3" class="mb-2 d-none">
+            <input type="text" class="form-control" name="addit_person_3" placeholder="Additional person 3: First Last"
+              minlength="3">
+          </div>
+
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-calendar-plus me-1"></i>Confirm Booking
+            </button>
+          </div>
+
+        </form>
+        {% else %}
+        <p class="text-muted">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          No available spots in the next 4 weeks for this tour.
+        </p>
+        {% endif %}
+
+        <!-- Guest or guide: show login/info prompt -->
+        {% elif current_user.is_authenticated and current_user.user_type == 'guide' %}
+        <div class="alert alert-info mb-0">
+          <i class="bi bi-info-circle me-1"></i>
+          Guides cannot book tours. Log in as a participant to make a reservation.
+        </div>
+
+        {% elif current_user.is_authenticated and current_user.user_type == 'admin' %}
+        <div class="alert alert-secondary mb-0">
+          <i class="bi bi-shield-check me-1"></i>
+          Administrator view.
+        </div>
+
+        {% else %}
+        <!-- Not logged in -->
+        <div class="alert alert-warning">
+          <i class="bi bi-lock me-1"></i>
+          <a href="{{ url_for('login', next=request.full_path) }}">Log in</a> as a participant to book this tour.
+        </div>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-primary w-100">
+          <i class="bi bi-person-plus me-1"></i>Create a participant account
+        </a>
+        {% endif %}
+
+      </div>
+    </div>
+  </aside>
+
+</div>
+{% endblock %}
