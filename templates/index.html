@@ -182,27 +182,13 @@
   {% endfor %}
 </section>
 
-<div id="db-dump-data" style="display: none;" data-dump='{{ db_dump | tojson | safe }}'></div>
-<script>
-  (function () {
-    const el = document.getElementById('db-dump-data');
-    if (el) {
-      try {
-        const dump = JSON.parse(el.getAttribute('data-dump'));
-        console.log("=== DATABASE DUMP ===", dump);
-      } catch (e) {
-        console.error("Failed to parse database dump:", e);
-      }
-    }
-  })();
-</script>
 
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
 {% endblock %}
 
 {% block styles %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
 {% endblock %}
