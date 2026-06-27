@@ -71,7 +71,7 @@ h6 {
   display: none !important;
 }
 
-/* ---- Page background + overlay (base.html) ---- */
+/* Page background + overlay (base.html) */
 .page-bg {
   background-color: black;
   background-size: cover;
