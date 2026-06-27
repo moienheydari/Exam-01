@@ -1,5 +1,4 @@
 from datetime import date, datetime, timedelta
-import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.models import Guide, Participant, Admin
@@ -128,6 +127,11 @@ def get_home_calendar_data(selected_date=None):
                 'guide_name': f"{guide['first_name']} {guide['last_name']}" if guide else 'Unknown',
                 'meetpoint_name': meetpoint['name'] if meetpoint else 'Unknown'
             })
+    
+    # Sort tours for each day by start time ascending
+    for day in calendar:
+        calendar[day].sort(key=lambda x: x['time'])
+
     return calendar, week_dates
 
 
