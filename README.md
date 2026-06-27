@@ -55,7 +55,7 @@ Use the credentials below to log in and test different roles:
 #### A. Participant Testing
 1. **Log in** as a Participant (e.g., `moien@gmail.com` / `test999`).
 2. **Book a Tour**:
-   - Go to the homepage and click on an upcoming tour card, or use the navigation to find a tour.
+   - Go to the homepage and click on an upcoming tour card, or use the filters to find a tour.
    - Select a date and time from the available schedule, choose a party size (1–4), and enter guest names if reserving multiple spots.
    - Test validation constraints: you cannot book a tour on dates it is not offered, nor can you book a tour that conflicts (in date, time, and duration) with any of your existing reservations.
 3. **Cancel a Reservation**:
@@ -83,3 +83,4 @@ Use the credentials below to log in and test different roles:
    - View key metrics: total guides, total participants, total tours, and total reservations.
    - View a breakdown of reservations by language.
    - Inspect the list of all registered guides and their corresponding tours.
+   - Click on tours to view their details and the reservations.
