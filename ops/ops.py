@@ -115,7 +115,6 @@ def get_home_calendar_data(selected_date=None):
             if day_date < date.today() or (day_date == date.today() and time < datetime.now().strftime("%H:%M")):
                 continue
             rt = reserved_tours_dao.get_reserved_tour_by_tour_and_date(tour['id'], str(day_date))
-            print(f"{tour['id']} {str(day_date)} => {rt}")
             tour_dict = dict(tour)
             for full_name, abbr in LANGUAGES.items():
                 if tour_dict.get('language') == abbr:

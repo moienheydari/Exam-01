@@ -225,7 +225,6 @@ def signup():
         flash(err_msg, 'danger')
         return redirect(url_for('register'))
 
-    # File uploads remain in the web controller layer
     profile_img_address = None
     if user_type == 'guide':
         profile_img = request.files.get('profile_img')
@@ -365,7 +364,6 @@ def create_tour():
 @app.route('/edit_tour/<int:tour_id>', methods=['GET', 'POST'])
 @login_required
 def edit_tour(tour_id):
-    print(f"Accessing edit_tour for tour_id: {tour_id}")  # Debugging line
     """Edit a tour (guide only). Essential fields locked once any reservation exists."""
     if current_user.user_type != 'guide':
         flash('Only guides can edit tours.', 'danger')
@@ -410,7 +408,6 @@ def edit_tour(tour_id):
             current_stops.append(place['name'])
 
     if request.method == 'POST':
-        print("Form data received:", request.form)  # Debugging line
         title = request.form.get('title', '').strip()
         description = request.form.get('description', '').strip()
         duration = request.form.get('duration', '').strip()
