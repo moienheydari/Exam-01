@@ -1,13 +1,14 @@
 import sqlite3
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Monkeypatch sqlite3.connect to ensure the absolute path is always used
 _original_connect = sqlite3.connect
 
 def _patched_connect(database, *args, **kwargs):
     if database == "database/space_tours.db":
-        db_dir = os.path.dirname(os.path.abspath(__file__))
-        database = os.path.join(db_dir, "database", "space_tours.db")
+        database = os.path.join(BASE_DIR, "database", "space_tours.db")
     return _original_connect(database, *args, **kwargs)
 
 sqlite3.connect = _patched_connect
@@ -231,7 +232,9 @@ def signup():
         if profile_img and profile_img.filename:
             ext = profile_img.filename.rsplit('.', 1)[-1].lower()
             filename = f"{int(datetime.now().timestamp())}.{ext}"
-            save_path = os.path.join('static', 'images', 'profile_imgs', filename)
+            folder_path = os.path.join(BASE_DIR, 'static', 'images', 'profile_imgs')
+            os.makedirs(folder_path, exist_ok=True)
+            save_path = os.path.join(folder_path, filename)
             profile_img.save(save_path)
             profile_img_address = f"images/profile_imgs/{filename}"
 
@@ -331,7 +334,9 @@ def create_tour():
             if photo and photo.filename:
                 ext = photo.filename.rsplit('.', 1)[-1].lower()
                 filename = f"tour_{int(datetime.now().timestamp())}_{i}.{ext}"
-                save_path = os.path.join('static', 'images', 'tour_imgs', filename)
+                folder_path = os.path.join(BASE_DIR, 'static', 'images', 'tour_imgs')
+                os.makedirs(folder_path, exist_ok=True)
+                save_path = os.path.join(folder_path, filename)
                 photo.save(save_path)
                 photo_addresses.append(f"images/tour_imgs/{filename}")
             else:
@@ -436,7 +441,9 @@ def edit_tour(tour_id):
             if photo and photo.filename:
                 ext = photo.filename.rsplit('.', 1)[-1].lower()
                 filename = f"tour_{int(datetime.now().timestamp())}_{i}.{ext}"
-                save_path = os.path.join('static', 'images', 'tour_imgs', filename)
+                folder_path = os.path.join(BASE_DIR, 'static', 'images', 'tour_imgs')
+                os.makedirs(folder_path, exist_ok=True)
+                save_path = os.path.join(folder_path, filename)
                 photo.save(save_path)
                 photo_addresses.append(f"images/tour_imgs/{filename}")
             else:
@@ -507,7 +514,9 @@ def report_tour(reserved_tour_id):
         # Save the photo and compile proof_img_address now that validation succeeded
         ext = proof_img.filename.rsplit('.', 1)[-1].lower()
         filename = f"proof_{int(datetime.now().timestamp())}.{ext}"
-        save_path = os.path.join('static', 'images', 'proof_imgs', filename)
+        folder_path = os.path.join(BASE_DIR, 'static', 'images', 'proof_imgs')
+        os.makedirs(folder_path, exist_ok=True)
+        save_path = os.path.join(folder_path, filename)
         proof_img.save(save_path)
         proof_img_address = f"images/proof_imgs/{filename}"
 
