@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-import ops
+import ops.ops as ops
 import database.tours_dao as tours_dao
 import database.places_dao as places_dao
 
