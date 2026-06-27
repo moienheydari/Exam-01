@@ -13,7 +13,8 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}" type="image/x-icon">
   <link rel="icon" href="{{ url_for('static', filename='images/icons/favicon.png') }}" type="image/png">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/validation.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
 </head>
 
 {% if current_user.is_authenticated and current_user.user_type == 'guide' %}

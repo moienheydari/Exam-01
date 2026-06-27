@@ -83,7 +83,7 @@
             </div>
 
             <!-- Schedule -->
-            <div class="mb-3">
+            <div class="mb-3 tour-schedule-container">
               <label class="form-label">Weekly Schedule</label>
               {% for day in day_order %}
               <div class="d-flex align-items-center mb-2">
@@ -159,4 +159,8 @@
     </article>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tour_form.js') }}" defer></script>
 {% endblock %}
