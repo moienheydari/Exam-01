@@ -1,0 +1,11 @@
+/* Photo carousel max height */
+.tour-carousel-img {
+  max-height: 320px;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Stop badge in tour detail */
+.stop-badge {
+  font-size: 0.85rem;
+}

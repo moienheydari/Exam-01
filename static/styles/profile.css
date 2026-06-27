@@ -1,0 +1,7 @@
+/* Profile photo in guide profile */
+.guide-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}

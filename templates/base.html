@@ -12,7 +12,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}" type="image/x-icon">
   <link rel="icon" href="{{ url_for('static', filename='images/icons/favicon.png') }}" type="image/png">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/global.css') }}">
+  {% block styles %}{% endblock %}
   <script src="{{ url_for('static', filename='js/validation.js') }}" defer></script>
   {% block scripts %}{% endblock %}
 </head>

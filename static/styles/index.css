@@ -1,0 +1,82 @@
+/* Weekly calendar: 7 equal columns, no scrolling */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  min-height: 100vh;
+}
+
+.day-column {
+  min-width: 0;
+  /* allow flex/grid children to shrink and truncate */
+}
+
+/* Tour card title truncation */
+.tour-card .card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Filter bar (index.html) */
+.experience-card-header {
+  background: linear-gradient(to right, #3c2037, #42213D);
+}
+
+.py-7 {
+  padding-top: 8.5rem;
+  padding-bottom: 8.5rem;
+}
+
+.tours-anchor {
+  height: 1px;
+}
+
+.date-input {
+  width: 145px;
+}
+
+.date-input-readonly {
+  width: 145px;
+  background: #f8f9fa;
+  cursor: default;
+}
+
+.filter-range {
+  width: 110px;
+}
+
+.filter-range::-webkit-slider-thumb {
+  background-color: #ff9142;
+}
+
+.filter-range::-moz-range-thumb {
+  background-color: #ff9142;
+}
+
+#dur-display {
+  display: inline-block;
+  min-width: 80px;
+}
+
+.lang-dropdown-menu {
+  min-width: 160px;
+}
+
+/* Card styling for calendar */
+.tour-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-available {
+  border-left: 4px solid #D4AF37 !important;
+}
+
+.card-reserved {
+  border-left: 4px solid #42213D !important;
+}

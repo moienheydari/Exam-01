@@ -1,0 +1,19 @@
+/* Schedule day/time inputs (create_tour & edit_tour) */
+.day-check-col {
+  min-width: 80px;
+}
+
+.time-input {
+  max-width: 130px;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
