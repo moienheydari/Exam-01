@@ -17,6 +17,7 @@ Use the credentials below to log in and test different roles:
 | **Chert Wild** | `cherwild@gmail.com` | `test111` |
 | **John Cena** | `youcantseeme@gmail.com` | `wwewwe` |
 | **Sam Sung** | `samsung@gmail.com` | `123456789` |
+| **Nemo Nobody** | `mrnobody@gmail.com` | `19991999` |
 
 ### 2. Participants
 | Name | Email | Password |
@@ -25,6 +26,7 @@ Use the credentials below to log in and test different roles:
 | **Ali Sams** | `aliali@gmail.com` | `testtest` |
 | **John Doe** | `verygood@gmail.com` | `testyes` |
 | **Tom Chillie** | `tom@gmail.com` | `123456` |
+| **Ali Kaz** | `alikaz@gmail.com` | `123123` |
 
 ### 3. Administrator
 | Role | Email | Password |
